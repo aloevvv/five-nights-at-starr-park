@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>FIve Nights</title>
+  <title>FNAF Fan Game</title>
   <style>
     body {
       margin: 0;
@@ -62,10 +62,14 @@
     <div id="continueBtn" class="menu-option disabled">Continue</div>
   </div>
 
+  <!-- Game Scene -->
   <div id="game">
     <img id="office" src="office.png" alt="Office">
     <img id="cameraBtn" src="camera.png" alt="Camera Button">
   </div>
+
+  <!-- Ambience Audio -->
+  <audio id="ambience" src="ambience.mp3" loop></audio>
 
   <script>
     function startNewGame() {
@@ -73,6 +77,11 @@
       document.getElementById("menu").style.display = "none";
       // Show game
       document.getElementById("game").style.display = "block";
+
+      // Play ambience at 10% volume
+      const ambience = document.getElementById("ambience");
+      ambience.volume = 0.1; 
+      ambience.play();
     }
   </script>
 </body>
