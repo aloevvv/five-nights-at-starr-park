@@ -191,6 +191,8 @@ function toggleCamera() {
     document.getElementById("camView").style.display = "block";
     document.getElementById("map").style.display = "block";
     document.getElementById("staticOverlay").style.display = "block";
+    document.getElementById("doorA").style.display = "none";
+    document.getElementById("doorB").style.display = "none";
     resetParanoia();
     updateCameraView();
   } else {
@@ -198,9 +200,12 @@ function toggleCamera() {
     document.getElementById("camView").style.display = "none";
     document.getElementById("map").style.display = "none";
     document.getElementById("staticOverlay").style.display = "none";
+    document.getElementById("doorA").style.display = "block";
+    document.getElementById("doorB").style.display = "block";
     clearTimeout(paranoiaTimer);
   }
 }
+
 
 // ====== CAMERA KEYBINDS ======
 document.addEventListener("keydown", e => {
