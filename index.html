@@ -76,6 +76,35 @@
       z-index: 10;
       pointer-events: none;
     }
+    .door {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 200px; /* adjust width to fit */
+  z-index: 8;
+}
+
+.door-left {
+  left: 0;
+}
+
+.door-right {
+  right: 0;
+}
+
+#darkOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  opacity: 0; /* starts transparent */
+  pointer-events: none;
+  z-index: 20; /* above everything */
+  transition: opacity 0.5s;
+}
+
   </style>
 </head>
 <body>
@@ -94,6 +123,14 @@
     <img id="map" src="map.png">
     <img id="staticOverlay" src="static.gif">
   </div>
+  
+  <!-- Doors -->
+<img id="doorA" src="doorAoff.png" class="door door-left">
+<img id="doorB" src="doorBoff.png" class="door door-right">
+
+<!-- Infection overlay -->
+<div id="darkOverlay"></div>
+
 
   <!-- Ambience Audio -->
   <audio id="ambience" src="ambience.mp3" loop></audio>
