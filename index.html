@@ -110,8 +110,8 @@
 <body>
   <!-- Menu -->
   <div id="menu">
-    <h1>Loading...</h1>
-    <div class="menu-option" onclick="startNewGame()">New Game</div>
+    <h1>Five Nights At Starr Park</h1>
+    <div id="newGameBtn" class="menu-option">New Game</div>
     <div id="continueBtn" class="menu-option disabled">Continue</div>
   </div>
 
@@ -119,7 +119,7 @@
   <div id="game">
     <img id="office" src="office.png" alt="Office">
     <img id="camView" src="CAM1.png" style="display:none;">
-    <img id="cameraBtn" src="camera.png" onclick="toggleCamera()">
+    <img id="cameraBtn" src="camera.png">
     <img id="map" src="map.png">
     <img id="staticOverlay" src="static.gif">
     <img id="doorA" src="doorAoff.png" class="door door-left">
@@ -203,7 +203,7 @@ function toggleCamera() {
   }
 }
 
-
+document.getElementById("cameraBtn").addEventListener("click", toggleCamera);
 // ====== CAMERA KEYBINDS ======
 document.addEventListener("keydown", e => {
   if (!CamOn) return;
@@ -387,6 +387,8 @@ function killPlayer(enemy) {
   // End game (simple example: reload page)
   setTimeout(()=>{ location.reload(); }, 3000);
 }
+    document.getElementById("newGameBtn").addEventListener("click", startNewGame);
+
 
   </script>
 </body>
