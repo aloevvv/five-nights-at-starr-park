@@ -101,6 +101,7 @@
 
   <script>
 // ====== GAME STATE ======
+// ====== GAME STATE ======
 let CamOn = false;
 let currentCam = "CAM1";
 let paranoiaTimer = null;
@@ -112,7 +113,7 @@ let Snipe = "CAM1";
 let Mouse = "CAM1";
 
 // AI levels (0–20)
-let PunchAI = 5;   // Night 1 example
+let PunchAI = 5;
 let SnipeAI = 5;
 let MouseAI = 5;
 
@@ -120,6 +121,19 @@ let MouseAI = 5;
 const PunchPath = ["CAM1","CAM5","CAM4","CAM9A"];
 const SnipePath = ["CAM1","CAM2","CAM3","CAM8","CAM6","CAM9B"];
 const MousePath = ["CAM1","CAM1B","CAM2","CAM3","CAM8","CAM6","CAM9B"];
+
+// Door states
+let doorAClosed = false;
+let doorBClosed = false;
+
+// Infection meter
+let infected = 0; // 0–60
+let infectionInterval = null;
+
+// Kill timers
+let punchDoorTimer = null;
+let snipeDoorTimer = null;
+let mouseDoorTimer = null;
 
 // ====== GAME START ======
 function startNewGame() {
@@ -129,6 +143,7 @@ function startNewGame() {
   ambience.volume = 0.1;
   ambience.play();
   startAI();
+  startInfectionMeter();
 }
 
 // ====== CAMERA TOGGLE ======
@@ -202,9 +217,9 @@ function updateCameraView() {
 
 // ====== AI LOOP ======
 function startAI() {
-  setInterval(movePunch, 5000);  // Punch every 5s
-  setInterval(moveSnipe, 5000); // Snipe every 5s
-  setInterval(moveMouse, 2500); // Mouse every 2.5s
+  setInterval(movePunch, 5000);
+  setInterval(moveSnipe, 5000);
+  setInterval(moveMouse, 2500);
 }
 
 function playFootsteps() {
@@ -218,9 +233,10 @@ function movePunch() {
     if (Punch==="CAM1") { Punch="CAM5"; }
     else if (Punch==="CAM5") { Punch=Math.random()<0.5?"CAM4":"CAM9A"; }
     else if (Punch==="CAM4") { Punch="CAM5"; }
-    else if (Punch==="CAM9A") { Punch=Math.random()<0.75?"DOOR":"CAM5"; }
+    else if (Punch==="CAM9A") { Punch=Math.random()<0.75?"doorA":"CAM5"; }
     playFootsteps();
     updateCameraView();
+    checkDoorStates();
   }
 }
 
@@ -233,9 +249,10 @@ function moveSnipe() {
     else if (Snipe==="CAM3") Snipe=Math.random()<0.75?"CAM8":"CAM2";
     else if (Snipe==="CAM8") Snipe="CAM6";
     else if (Snipe==="CAM6") Snipe=Math.random()<0.75?"CAM9B":"CAM8";
-    else if (Snipe==="CAM9B") Snipe="DOOR";
+    else if (Snipe==="CAM9B") Snipe="doorB";
     playFootsteps();
     updateCameraView();
+    checkDoorStates();
   }
 }
 
@@ -249,22 +266,87 @@ function moveMouse() {
     else if (Mouse==="CAM3") Mouse="CAM8";
     else if (Mouse==="CAM8") Mouse="CAM6";
     else if (Mouse==="CAM6") Mouse="CAM9B";
-    else if (Mouse==="CAM9B") Mouse="DOOR";
+    else if (Mouse==="CAM9B") Mouse="doorB";
     updateCameraView();
+    checkDoorStates();
   }
 }
 
-// ====== PARANOIA ======
-function resetParanoia() {
-  clearTimeout(paranoiaTimer);
-  let threshold = (Mouse==="CAM1B")?7000:15000;
-  paranoiaTimer = setTimeout(()=>{ paranoid=true; }, threshold);
+// ====== DOOR & INFECTION LOGIC ======
+document.addEventListener("keydown", e => {
+  if (e.key === "a" || e.key === "A") {
+    doorAClosed = !doorAClosed;
+    document.getElementById("doorA").src = doorAClosed ? "doorAon.png" : "doorAoff.png";
+    if (doorAClosed) resetDoor("A");
+  }
+  if (e.key === "d" || e.key === "D") {
+    doorBClosed = !doorBClosed;
+    document.getElementById("doorB").src = doorBClosed ? "doorBon.png" : "doorBoff.png";
+    if (doorBClosed) resetDoor("B");
+  }
+});
+
+function startInfectionMeter() {
+  infectionInterval = setInterval(() => {
+    if ((Punch==="doorA" && !doorAClosed) || (Snipe==="doorB" && !doorBClosed) || (Mouse==="doorB" && !doorBClosed)) {
+      infected = Math.min(60, infected+1);
+      darkenScreen();
+    }
+  }, 2000);
 }
 
-function hallucinate() {
-  if (!CamOn) return;
+function darkenScreen() {
+  let overlay = document.getElementById("darkOverlay");
+  overlay.style.opacity = infected/60; // 0 to 1
+}
+
+function checkDoorStates() {
+  if (Punch==="doorA" && !doorAClosed) {
+    if (!punchDoorTimer) punchDoorTimer = setTimeout(()=>killPlayer("Punch"),10000);
+  }
+  if (Snipe==="doorB" && !doorBClosed) {
+    if (!snipeDoorTimer) snipeDoorTimer = setTimeout(()=>killPlayer("Snipe"),10000);
+  }
+  if (Mouse==="doorB" && !doorBClosed) {
+    if (!mouseDoorTimer) mouseDoorTimer = setTimeout(()=>killPlayer("Mouse"),10000);
+  }
+}
+
+function resetDoor(which) {
+  if (which==="A") {
+    if (Punch==="doorA") {
+      Punch="CAM1";
+      clearTimeout(punchDoorTimer);
+      punchDoorTimer = null;
+    }
+  }
+  if (which==="B") {
+    if (Snipe==="doorB") {
+      Snipe="CAM1";
+      clearTimeout(snipeDoorTimer);
+      snipeDoorTimer = null;
+    }
+    if (Mouse==="doorB") {
+      Mouse="CAM1";
+      clearTimeout(mouseDoorTimer);
+      mouseDoorTimer = null;
+    }
+  }
   updateCameraView();
-  setTimeout(()=>{ paranoid=false; }, 120000);
+}
+
+function killPlayer(enemy) {
+  // Show jumpscare image
+  const camView = document.getElementById("camView");
+  camView.style.display = "block";
+  camView.src = enemy.toLowerCase() + "jumpscare.png"; // e.g. punchjumpscare.png
+
+  // Play jumpscare audio
+  let audio = new Audio("jumpscare.mp3");
+  audio.play();
+
+  // End game (simple example: reload page)
+  setTimeout(()=>{ location.reload(); }, 3000);
 }
 
   </script>
