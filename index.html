@@ -35,7 +35,7 @@
       overflow: hidden;
     }
 
-    #office {
+    #office, #camView {
       width: 100%;
       height: 100%;
       object-fit: cover;
@@ -51,6 +51,28 @@
       transform: translateX(-50%);
       width: 150px;
       cursor: pointer;
+      z-index: 5; /* stays above office/cam but below static */
+    }
+
+    #map {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      width: 120px;
+      display: none;
+      z-index: 6;
+    }
+
+    #staticOverlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+      z-index: 10;
+      pointer-events: none;
     }
   </style>
 </head>
@@ -65,23 +87,43 @@
   <!-- Game Scene -->
   <div id="game">
     <img id="office" src="office.png" alt="Office">
-    <img id="cameraBtn" src="camera.png" alt="Camera Button">
+    <img id="camView" src="CAM1.png" alt="Camera View" style="display:none;">
+    <img id="cameraBtn" src="camera.png" alt="Camera Button" onclick="toggleCamera()">
+    <img id="map" src="map.png" alt="Map">
+    <img id="staticOverlay" src="static.png" alt="Static Overlay">
   </div>
 
   <!-- Ambience Audio -->
   <audio id="ambience" src="ambience.mp3" loop></audio>
 
   <script>
+    let CamOn = false; // camera state
+
     function startNewGame() {
-      // Hide menu
       document.getElementById("menu").style.display = "none";
-      // Show game
       document.getElementById("game").style.display = "block";
 
-      // Play ambience at 10% volume
       const ambience = document.getElementById("ambience");
-      ambience.volume = 0.1; 
+      ambience.volume = 0.1;
       ambience.play();
+    }
+
+    function toggleCamera() {
+      CamOn = !CamOn; // flip state
+
+      if (CamOn) {
+        // Show camera view
+        document.getElementById("office").style.display = "none";
+        document.getElementById("camView").style.display = "block";
+        document.getElementById("map").style.display = "block";
+        document.getElementById("staticOverlay").style.display = "block";
+      } else {
+        // Return to office
+        document.getElementById("office").style.display = "block";
+        document.getElementById("camView").style.display = "none";
+        document.getElementById("map").style.display = "none";
+        document.getElementById("staticOverlay").style.display = "none";
+      }
     }
   </script>
 </body>
