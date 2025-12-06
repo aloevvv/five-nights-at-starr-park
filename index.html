@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Five Nights At Your Mother's</title>
+  <style>
+    body {
+      background-color: black;
+      color: white;
+      font-family: 'Courier New', monospace;
+      text-align: center;
+      margin-top: 20%;
+    }
+
+    h1 {
+      margin-bottom: 40px;
+    }
+
+    .menu-option {
+      font-size: 24px;
+      margin: 15px;
+      cursor: pointer;
+    }
+
+    .disabled {
+      color: gray;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <h1>Loading...</h1>
+  <div id="menu">
+    <div class="menu-option" onclick="startNewGame()">New Game</div>
+    <div id="continueBtn" class="menu-option disabled">Continue</div>
+  </div>
+
+  <script>
+    function startNewGame() {
+      document.querySelector("h1").textContent = "Starting New Game...";
+      // Later: add logic to begin Night 1
+      unlockContinue();
+    }
+
+    function unlockContinue() {
+      const continueBtn = document.getElementById("continueBtn");
+      continueBtn.classList.remove("disabled");
+      continueBtn.onclick = () => {
+        document.querySelector("h1").textContent = "Continuing Game...";
+        // Later: load saved progress
+      };
+    }
+  </script>
+</body>
+</html>
