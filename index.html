@@ -660,19 +660,26 @@ function spawnRocket() {
   let cams = ["CAM2","CAM3","CAM4","CAM5","CAM6","CAM8"];
   rocketCam = cams[Math.floor(Math.random() * cams.length)];
   rocketActive = true;
+
+  const rocket = document.getElementById("rocket");
+  rocket.style.display = "block";
+  rocket.style.top = "40%";  
+  rocket.style.left = "50%"; 
+  rocket.src = "rocket.png";
+  rocket.style.zIndex = 18;  
+
   console.log("Rocket spawned in", rocketCam);
 
-  // infection increase
   infectionInterval = setInterval(() => {
     infected = Math.min(60, infected+1);
     darkenScreen();
   }, 1000);
 
-  // fail-safe timer
   rocketTimer = setTimeout(() => {
     if (rocketActive) killPlayer("Boss");
   }, 8000);
 }
+
 
 function clickRocket(cam) {
   if (rocketActive && cam === rocketCam) {
@@ -685,8 +692,16 @@ function clickRocket(cam) {
   }
 }
 
-camView.addEventListener("click", () => {
-  clickRocket(currentCam);
+document.getElementById("rocket").addEventListener("click", () => {
+  if (rocketActive && currentCam === rocketCam) {
+    rocketActive = false;
+    document.getElementById("rocket").style.display = "none";
+    clearInterval(infectionInterval);
+    clearTimeout(rocketTimer);
+    BossStage = 2;
+    BossProgress = 0;
+    console.log("Rocket defused, Boss reset to Stage 2");
+  }
 });
 
 
