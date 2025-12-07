@@ -184,6 +184,7 @@ let bossTimer = null;
 let rocketActive = false;
 let rocketCam = null;
 let rocketTimer = null;
+let bossMaddenedTimer = null;
 
 // AI levels (0–20)
 let PunchAI = 0;
@@ -463,8 +464,15 @@ document.addEventListener("keydown", e => {
     
 if (e.key === "e" || e.key === "E") {
   if (BossStage === "Maddened") {
+ 
+    if (bossMaddenedTimer) {
+      clearTimeout(bossMaddenedTimer);
+      bossMaddenedTimer = null;
+    }
     BossStage = 4;
-    console.log("Boss calmed back to Stage 4");
+    BossProgress = 0; 
+    console.log("Boss calmed back to Stage 4 instantly");
+    updateBossCam();
   } else if (BossStage === 4) {
     BossStage = 5;
     spawnRocket();
@@ -638,12 +646,18 @@ function moveMouse() {
       console.log("Boss entered Maddened Stage!");
     }
   } else if (BossStage === "Maddened") {
-
-    setTimeout(() => { BossStage = 5; spawnRocket(); }, 5000);
+   
+    bossMaddenedTimer = setTimeout(() => {
+      BossStage = 5;
+      spawnRocket();
+    }, 5000);
   }
+
   updateBossCam();
 }
+
 bossTimer = setInterval(updateBoss, 5000);
+
 
 function updateBossCam() {
   const camView = document.getElementById("camView");
