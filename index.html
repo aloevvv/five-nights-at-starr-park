@@ -492,36 +492,32 @@ function clearParanoiaTimer(which) {
 }
     
 setInterval(() => {
-  if (doorAClosed && doorAClosedAt) {
+  if (doorAClosed && doorAClosedAt && !doorADisabled) {
     let elapsed = (Date.now() - doorAClosedAt) / 1000;
-    if (doorATotalClosed + elapsed >= 5) { 
-      doorAClosed = false;
-      doorAClosedAt = null;
-      document.getElementById("doorA").src = "doorAoff.png";
-      console.log("Door A permanently disabled");
+    if (doorATotalClosed + elapsed >= 120) { // or 5 for testing
+      disableDoor("A");
     }
   }
-  if (doorBClosed && doorBClosedAt) {
+  if (doorBClosed && doorBClosedAt && !doorBDisabled) {
     let elapsed = (Date.now() - doorBClosedAt) / 1000;
     if (doorBTotalClosed + elapsed >= 120) {
-      doorBClosed = false;
-      doorBClosedAt = null;
-      document.getElementById("doorB").src = "doorBoff.png";
-      console.log("Door B permanently disabled");
+      disableDoor("B");
     }
   }
 }, 1000);
-
-function checkDisable(which) {
-  if (which === "A" && doorATotalClosed >= 120) { 
+    
+function disableDoor(which) {
+  if (which === "A") {
     doorAClosed = false;
-    doorADisabled = true; // mark permanently disabled
+    doorADisabled = true;
+    doorAClosedAt = null;
     document.getElementById("doorA").src = "doorAoff.png";
     console.log("Door A permanently disabled");
   }
-  if (which === "B" && doorBTotalClosed >= 120) {
+  if (which === "B") {
     doorBClosed = false;
     doorBDisabled = true;
+    doorBClosedAt = null;
     document.getElementById("doorB").src = "doorBoff.png";
     console.log("Door B permanently disabled");
   }
