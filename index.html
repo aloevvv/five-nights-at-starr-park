@@ -163,6 +163,10 @@ let doorBTotalClosed = 0;
 let doorAClosedAt = null;
 let doorBClosedAt = null;
 
+let doorADisabled = false;
+let doorBDisabled = false;
+
+
 // Valid paths
 const PunchPath = ["CAM1","CAM5","CAM4","CAM9A"];
 const SnipePath = ["CAM1","CAM2","CAM3","CAM8","CAM6","CAM9B"];
@@ -247,39 +251,43 @@ document.addEventListener("keydown", e => {
 
 
   document.addEventListener("keydown", e => {
-    if (e.key === "a" || e.key === "A") {
-      doorAClosed = !doorAClosed;
-      document.getElementById("doorA").src = doorAClosed ? "doorAon.png" : "doorAoff.png";
+  if (e.key === "a" || e.key === "A") {
+    if (doorADisabled) return; // ignore if disabled
 
-      if (doorAClosed) {
-        resetDoor("A");
-        startParanoiaTimer("A");
-        doorAClosedAt = Date.now(); // mark when closed
-      } else {
-        clearParanoiaTimer("A");
-        if (doorAClosedAt) {
-          doorATotalClosed += (Date.now() - doorAClosedAt) / 1000; // add seconds
-          doorAClosedAt = null;
-        }
-        checkDisable("A");
+    doorAClosed = !doorAClosed;
+    document.getElementById("doorA").src = doorAClosed ? "doorAon.png" : "doorAoff.png";
+
+    if (doorAClosed) {
+      resetDoor("A");
+      startParanoiaTimer("A");
+      doorAClosedAt = Date.now();
+    } else {
+      clearParanoiaTimer("A");
+      if (doorAClosedAt) {
+        doorATotalClosed += (Date.now() - doorAClosedAt) / 1000;
+        doorAClosedAt = null;
       }
+      checkDisable("A");
     }
+  }
 
-    if (e.key === "d" || e.key === "D") {
-      doorBClosed = !doorBClosed;
-      document.getElementById("doorB").src = doorBClosed ? "doorBon.png" : "doorBoff.png";
+  if (e.key === "d" || e.key === "D") {
+    if (doorBDisabled) return; // ignore if disabled
 
-      if (doorBClosed) {
-        resetDoor("B");
-        startParanoiaTimer("B");
-        doorBClosedAt = Date.now();
-      } else {
-        clearParanoiaTimer("B");
-        if (doorBClosedAt) {
-          doorBTotalClosed += (Date.now() - doorBClosedAt) / 1000;
-          doorBClosedAt = null;
-        }
-        checkDisable("B");
+    doorBClosed = !doorBClosed;
+    document.getElementById("doorB").src = doorBClosed ? "doorBon.png" : "doorBoff.png";
+
+    if (doorBClosed) {
+      resetDoor("B");
+      startParanoiaTimer("B");
+      doorBClosedAt = Date.now();
+    } else {
+      clearParanoiaTimer("B");
+      if (doorBClosedAt) {
+        doorBTotalClosed += (Date.now() - doorBClosedAt) / 1000;
+        doorBClosedAt = null;
+      }
+      checkDisable("B");
       }
     }
   });
@@ -474,17 +482,20 @@ setInterval(() => {
 }, 1000);
 
 function checkDisable(which) {
-  if (which === "A" && doorATotalClosed >= 5) {
+  if (which === "A" && doorATotalClosed >= 120) { 
     doorAClosed = false;
+    doorADisabled = true; // mark permanently disabled
     document.getElementById("doorA").src = "doorAoff.png";
-    console.log("Door A permanently disabled after 120s cumulative closed time");
+    console.log("Door A permanently disabled");
   }
-  if (which === "B" && doorBTotalClosed >= 5) {
+  if (which === "B" && doorBTotalClosed >= 120) {
     doorBClosed = false;
+    doorBDisabled = true;
     document.getElementById("doorB").src = "doorBoff.png";
-    console.log("Door B permanently disabled after 120s cumulative closed time");
+    console.log("Door B permanently disabled");
   }
 }
+
 
 
 function killPlayer(enemy) {
