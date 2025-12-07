@@ -152,6 +152,17 @@ let PunchAI = 5;
 let SnipeAI = 5;
 let MouseAI = 5;
 
+let doorAParanoiaTimer = null;
+let doorBParanoiaTimer = null;
+
+// Track cumulative closed time
+let doorATotalClosed = 0;
+let doorBTotalClosed = 0;
+
+// Track when door was last closed
+let doorAClosedAt = null;
+let doorBClosedAt = null;
+
 // Valid paths
 const PunchPath = ["CAM1","CAM5","CAM4","CAM9A"];
 const SnipePath = ["CAM1","CAM2","CAM3","CAM8","CAM6","CAM9B"];
@@ -236,17 +247,41 @@ document.addEventListener("keydown", e => {
 });
 
 
-  // Door controls
   document.addEventListener("keydown", e => {
     if (e.key === "a" || e.key === "A") {
       doorAClosed = !doorAClosed;
       document.getElementById("doorA").src = doorAClosed ? "doorAon.png" : "doorAoff.png";
-      if (doorAClosed) resetDoor("A");
+
+      if (doorAClosed) {
+        resetDoor("A");
+        startParanoiaTimer("A");
+        doorAClosedAt = Date.now(); // mark when closed
+      } else {
+        clearParanoiaTimer("A");
+        if (doorAClosedAt) {
+          doorATotalClosed += (Date.now() - doorAClosedAt) / 1000; // add seconds
+          doorAClosedAt = null;
+        }
+        checkDisable("A");
+      }
     }
+
     if (e.key === "d" || e.key === "D") {
       doorBClosed = !doorBClosed;
       document.getElementById("doorB").src = doorBClosed ? "doorBon.png" : "doorBoff.png";
-      if (doorBClosed) resetDoor("B");
+
+      if (doorBClosed) {
+        resetDoor("B");
+        startParanoiaTimer("B");
+        doorBClosedAt = Date.now();
+      } else {
+        clearParanoiaTimer("B");
+        if (doorBClosedAt) {
+          doorBTotalClosed += (Date.now() - doorBClosedAt) / 1000;
+          doorBClosedAt = null;
+        }
+        checkDisable("B");
+      }
     }
   });
 });
@@ -389,6 +424,48 @@ function resetDoor(which) {
   }
   updateCameraView();
 }
+
+    function startParanoiaTimer(which) {
+  if (which === "A") {
+    clearParanoiaTimer("A");
+    doorAParanoiaTimer = setTimeout(() => {
+      paranoid = true;
+      console.log("Paranoia triggered by Door A");
+    }, 5000);
+  }
+  if (which === "B") {
+    clearParanoiaTimer("B");
+    doorBParanoiaTimer = setTimeout(() => {
+      paranoid = true;
+      console.log("Paranoia triggered by Door B");
+    }, 5000);
+  }
+}
+
+function clearParanoiaTimer(which) {
+  if (which === "A" && doorAParanoiaTimer) {
+    clearTimeout(doorAParanoiaTimer);
+    doorAParanoiaTimer = null;
+  }
+  if (which === "B" && doorBParanoiaTimer) {
+    clearTimeout(doorBParanoiaTimer);
+    doorBParanoiaTimer = null;
+  }
+}
+
+function checkDisable(which) {
+  if (which === "A" && doorATotalClosed >= 120) {
+    doorAClosed = false;
+    document.getElementById("doorA").src = "doorAoff.png";
+    console.log("Door A permanently disabled after 120s cumulative closed time");
+  }
+  if (which === "B" && doorBTotalClosed >= 120) {
+    doorBClosed = false;
+    document.getElementById("doorB").src = "doorBoff.png";
+    console.log("Door B permanently disabled after 120s cumulative closed time");
+  }
+}
+
 
 function killPlayer(enemy) {
   // Show jumpscare image
