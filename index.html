@@ -284,6 +284,9 @@ document.addEventListener("keydown", e => {
     doorAClosed = !doorAClosed;
     document.getElementById("doorA").src = doorAClosed ? "doorAon.png" : "doorAoff.png";
 
+    let audioA = new Audio("door.mp3");
+    audioA.play();
+
     if (doorAClosed) {
       resetDoor("A");
       startParanoiaTimer("A");
@@ -303,6 +306,9 @@ document.addEventListener("keydown", e => {
 
     doorBClosed = !doorBClosed;
     document.getElementById("doorB").src = doorBClosed ? "doorBon.png" : "doorBoff.png";
+
+    let audioB = new Audio("door.mp3");
+    audioB.play();
 
     if (doorBClosed) {
       resetDoor("B");
