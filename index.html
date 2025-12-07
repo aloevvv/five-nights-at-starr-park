@@ -54,6 +54,19 @@
       z-index: 5;
       top: unset; 
     }
+    #camLabel {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 28px;
+  font-family: 'Courier New', monospace;
+  color: white;
+  background-color: rgba(0,0,0,0.5);
+  padding: 5px 10px;
+  border-radius: 4px;
+  z-index: 15;
+}
+
 
     #map {
       position: absolute;
@@ -122,6 +135,7 @@
     <img id="camView" src="CAM1PMS.png" style="display:none;">
     <img id="cameraBtn" src="camera.png">
     <img id="map" src="map.png">
+    <div id="camLabel">CAM1</div>
     <img id="staticOverlay" src="static.gif">
     <img id="doorA" src="doorAoff.png" class="door door-left">
     <img id="doorB" src="doorBoff.png" class="door door-right">
@@ -323,7 +337,11 @@ function updateCameraView() {
   } else {
     camView.src = getActualImage(currentCam);
   }
+
+  // Update CAM label
+  document.getElementById("camLabel").textContent = currentCam;
 }
+
 
 // ====== AI LOOP ======
 function startAI() {
