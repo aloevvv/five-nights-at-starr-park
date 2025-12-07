@@ -177,10 +177,18 @@ let Punch = "CAM1";
 let Snipe = "CAM1";
 let Mouse = "CAM1";
 
+let BossStage = 1;       
+let BossProgress = 0; 
+let bossTimer = null;
+let rocketActive = false;
+let rocketCam = null;
+let rocketTimer = null;
+
 // AI levels (0–20)
 let PunchAI = 0;
 let SnipeAI = 0;
 let MouseAI = 5;
+let BossAI = 5;
 
 const nightAI = {
   1: {
@@ -404,6 +412,7 @@ document.addEventListener("keydown", e => {
     case "4": currentCam="CAM4"; break;
     case "5": currentCam="CAM5"; break;
     case "6": currentCam="CAM6"; break;
+    case "7": currentCam="CAM7"; break;
     case "8": currentCam="CAM8"; break;
     case "9": currentCam="CAM9A"; break;
     case "0": currentCam="CAM9B"; break;
@@ -449,9 +458,22 @@ document.addEventListener("keydown", e => {
       checkDisable("A");
     }
   }
+    
+if (e.key === "e" || e.key === "E") {
+  if (BossStage === "Maddened") {
+    BossStage = 4;
+    console.log("Boss calmed back to Stage 4");
+  } else if (BossStage === 4) {
+    BossStage = 5;
+    spawnRocket();
+    console.log("Boss forced to Stage 5!");
+  }
+}
+
+
 
   if (e.key === "d" || e.key === "D") {
-    if (doorBDisabled) return; // ignore if disabled
+    if (doorBDisabled) return;
 
     doorBClosed = !doorBClosed;
     document.getElementById("doorB").src = doorBClosed ? "doorBon.png" : "doorBoff.png";
@@ -571,6 +593,77 @@ function moveMouse() {
 
   }
 }
+    function updateBoss() {
+  if (BossStage <= 3) {
+    if (CamOn && currentCam === "CAM7") {
+      console.log("Boss progress blocked by CAM7 view");
+    } else {
+      BossProgress += BossAI;
+      if ((BossStage === 1 && BossProgress >= 60) ||
+          (BossStage === 2 && BossProgress >= 60) ||
+          (BossStage === 3 && BossProgress >= 100)) {
+        BossStage++;
+        BossProgress = 0;
+      }
+    }
+  } else if (BossStage === 4) {
+    let roll = Math.floor(Math.random() * 20) + 1;
+    if (roll <= BossAI) {
+      BossStage = "Maddened";
+      console.log("Boss entered Maddened Stage!");
+    }
+  } else if (BossStage === "Maddened") {
+
+    setTimeout(() => { BossStage = 5; spawnRocket(); }, 5000);
+  }
+  updateBossCam();
+}
+bossTimer = setInterval(updateBoss, 5000);
+
+function updateBossCam() {
+  const camView = document.getElementById("camView");
+  if (currentCam === "CAM7") {
+    if (BossStage === 1) camView.src = "CAM7stage1.png";
+    else if (BossStage === 2) camView.src = "CAM7stage2.png";
+    else if (BossStage === 3) camView.src = "CAM7stage3.png";
+    else if (BossStage === 4) camView.src = "CAM7stage4.png";
+    else if (BossStage === "Maddened") camView.src = "CAM7stageangry.png";
+    else if (BossStage === 5) camView.src = "CAM7stage5.png";
+  }
+}
+function spawnRocket() {
+  let cams = ["CAM2","CAM3","CAM4","CAM5","CAM6","CAM8"];
+  rocketCam = cams[Math.floor(Math.random() * cams.length)];
+  rocketActive = true;
+  console.log("Rocket spawned in", rocketCam);
+
+  // infection increase
+  infectionInterval = setInterval(() => {
+    infected = Math.min(60, infected+1);
+    darkenScreen();
+  }, 1000);
+
+  // fail-safe timer
+  rocketTimer = setTimeout(() => {
+    if (rocketActive) killPlayer("Boss");
+  }, 8000);
+}
+
+function clickRocket(cam) {
+  if (rocketActive && cam === rocketCam) {
+    rocketActive = false;
+    clearInterval(infectionInterval);
+    clearTimeout(rocketTimer);
+    BossStage = 2;
+    BossProgress = 0;
+    console.log("Rocket defused, Boss reset to Stage 2");
+  }
+}
+
+camView.addEventListener("click", () => {
+  clickRocket(currentCam);
+});
+
 
 function updateDoorSprites() {
   // Door A (Punch)
