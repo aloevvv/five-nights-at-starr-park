@@ -263,6 +263,19 @@ document.addEventListener("keydown", e => {
   resetParanoia();
 });
 
+  function resetParanoia() {
+  if (paranoiaTimer) {
+    clearTimeout(paranoiaTimer);
+    paranoiaTimer = null;
+  }
+
+  paranoiaTimer = setTimeout(() => {
+    paranoid = true;
+    console.log("Paranoia triggered!");
+  }, 15000); // 15 seconds, adjust as needed
+}
+
+
 
   document.addEventListener("keydown", e => {
   if (e.key === "a" || e.key === "A") {
