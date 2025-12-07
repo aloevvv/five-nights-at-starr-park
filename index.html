@@ -604,22 +604,45 @@ function moveSnipe() {
 }
 
 // Mouse AI
+let mouseFootstepTimer = null;
+
 function moveMouse() {
   let roll = Math.floor(Math.random() * 20) + 1;
   if (roll <= MouseAI) {
-    if (Mouse==="CAM1") Mouse=Math.random()<0.8?"CAM1B":"CAM2";
-    else if (Mouse==="CAM1B") Mouse=Math.random()<0.9?"CAM1B":"CAM1";
-    else if (Mouse==="CAM2") Mouse="CAM3";
-    else if (Mouse==="CAM3") Mouse="CAM8";
-    else if (Mouse==="CAM8") Mouse="CAM6";
-    else if (Mouse==="CAM6") Mouse="CAM9B";
-    else if (Mouse==="CAM9B") Mouse="doorB";
+    if (Mouse==="CAM1") {
+      Mouse = Math.random()<0.8 ? "CAM1B" : "CAM2";
+    } else if (Mouse==="CAM1B") {
+      Mouse = Math.random()<0.9 ? "CAM1B" : "CAM1";
+      if (!mouseFootstepTimer) {
+        mouseFootstepTimer = setInterval(() => {
+          playFootsteps();
+        }, 5000);
+        if (CamOn) {
+    clearTimeout(paranoiaTimer);
+    paranoiaTimer = setTimeout(() => {
+      paranoid = true;
+      console.log("Paranoia triggered early by Mouse at CAM1B");
+    }, 7000);
+  }
+      }
+    } else {
+      if (mouseFootstepTimer) {
+        clearInterval(mouseFootstepTimer);
+        mouseFootstepTimer = null;
+      }
+      if (Mouse==="CAM2") Mouse="CAM3";
+      else if (Mouse==="CAM3") Mouse="CAM8";
+      else if (Mouse==="CAM8") Mouse="CAM6";
+      else if (Mouse==="CAM6") Mouse="CAM9B";
+      else if (Mouse==="CAM9B") Mouse="doorB";
+    }
+
     updateCameraView();
     checkDoorStates();
     updateDoorSprites();
-
   }
 }
+
     function updateBoss() {
   if (BossStage <= 3) {
     if (CamOn && currentCam === "CAM7") {
