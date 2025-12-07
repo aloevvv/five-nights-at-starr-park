@@ -452,6 +452,27 @@ function clearParanoiaTimer(which) {
     doorBParanoiaTimer = null;
   }
 }
+    
+setInterval(() => {
+  if (doorAClosed && doorAClosedAt) {
+    let elapsed = (Date.now() - doorAClosedAt) / 1000;
+    if (doorATotalClosed + elapsed >= 5) { 
+      doorAClosed = false;
+      doorAClosedAt = null;
+      document.getElementById("doorA").src = "doorAoff.png";
+      console.log("Door A permanently disabled");
+    }
+  }
+  if (doorBClosed && doorBClosedAt) {
+    let elapsed = (Date.now() - doorBClosedAt) / 1000;
+    if (doorBTotalClosed + elapsed >= 120) {
+      doorBClosed = false;
+      doorBClosedAt = null;
+      document.getElementById("doorB").src = "doorBoff.png";
+      console.log("Door B permanently disabled");
+    }
+  }
+}, 1000);
 
 function checkDisable(which) {
   if (which === "A" && doorATotalClosed >= 5) {
