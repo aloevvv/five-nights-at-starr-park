@@ -182,6 +182,58 @@ let PunchAI = 5;
 let SnipeAI = 5;
 let MouseAI = 5;
 
+const nightAI = {
+  1: {
+    12: { Punch: 0, Snipe: 0, Mouse: 5 },
+    1:  { Punch: 6, Snipe: 5, Mouse: 4 },
+    2:  { Punch: 7, Snipe: 6, Mouse: 4 },
+    3:  { Punch: 8, Snipe: 7, Mouse: 5 },
+    4:  { Punch: 9, Snipe: 8, Mouse: 5 },
+    5:  { Punch: 10, Snipe: 9, Mouse: 6 }
+  },
+  2: {
+    12: { Punch: 8, Snipe: 7, Mouse: 5 },
+    1:  { Punch: 9, Snipe: 8, Mouse: 6 },
+    2:  { Punch: 10, Snipe: 9, Mouse: 6 },
+    3:  { Punch: 12, Snipe: 10, Mouse: 7 },
+    4:  { Punch: 13, Snipe: 11, Mouse: 8 },
+    5:  { Punch: 14, Snipe: 12, Mouse: 9 }
+  },
+  2: {
+    12: { Punch: 8, Snipe: 7, Mouse: 5 },
+    1:  { Punch: 9, Snipe: 8, Mouse: 6 },
+    2:  { Punch: 10, Snipe: 9, Mouse: 6 },
+    3:  { Punch: 12, Snipe: 10, Mouse: 7 },
+    4:  { Punch: 13, Snipe: 11, Mouse: 8 },
+    5:  { Punch: 14, Snipe: 12, Mouse: 9 }
+  },
+  3: {
+    12: { Punch: 8, Snipe: 7, Mouse: 5 },
+    1:  { Punch: 9, Snipe: 8, Mouse: 6 },
+    2:  { Punch: 10, Snipe: 9, Mouse: 6 },
+    3:  { Punch: 12, Snipe: 10, Mouse: 7 },
+    4:  { Punch: 13, Snipe: 11, Mouse: 8 },
+    5:  { Punch: 14, Snipe: 12, Mouse: 9 }
+  },
+  4: {
+    12: { Punch: 8, Snipe: 7, Mouse: 5 },
+    1:  { Punch: 9, Snipe: 8, Mouse: 6 },
+    2:  { Punch: 10, Snipe: 9, Mouse: 6 },
+    3:  { Punch: 12, Snipe: 10, Mouse: 7 },
+    4:  { Punch: 13, Snipe: 11, Mouse: 8 },
+    5:  { Punch: 14, Snipe: 12, Mouse: 9 }
+  },
+  5: {
+    12: { Punch: 8, Snipe: 7, Mouse: 5 },
+    1:  { Punch: 9, Snipe: 8, Mouse: 6 },
+    2:  { Punch: 10, Snipe: 9, Mouse: 6 },
+    3:  { Punch: 12, Snipe: 10, Mouse: 7 },
+    4:  { Punch: 13, Snipe: 11, Mouse: 8 },
+    5:  { Punch: 14, Snipe: 12, Mouse: 9 }
+  }
+};
+
+    
 let doorAParanoiaTimer = null;
 let doorBParanoiaTimer = null;
 
@@ -233,10 +285,21 @@ function startNewGame() {
     currentHour++;
   }
 
+  setAIForHour(currentNight, currentHour);
+
   updateHourLabel();
 
   if (currentHour === 6) {
     endNight();
+  }
+}
+
+function setAIForHour(night, hour) {
+  if (nightAI[night] && nightAI[night][hour]) {
+    PunchAI = nightAI[night][hour].Punch;
+    SnipeAI = nightAI[night][hour].Snipe;
+    MouseAI = nightAI[night][hour].Mouse;
+    console.log(`Night ${night}, ${hour}AM: Punch=${PunchAI}, Snipe=${SnipeAI}, Mouse=${MouseAI}`);
   }
 }
 
