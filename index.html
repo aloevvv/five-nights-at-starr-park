@@ -140,6 +140,10 @@
     <img id="doorA" src="doorAoff.png" class="door door-left">
     <img id="doorB" src="doorBoff.png" class="door door-right">
     <div id="darkOverlay"></div>
+    <div id="hourLabel" style="
+  position:absolute; top:10px; right:10px;
+  font-size:28px; color:white; font-family:'Courier New', monospace;
+  z-index:15;">12AM</div>
   </div>
   
 
@@ -155,6 +159,18 @@ let CamOn = false;
 let currentCam = "CAM1";
 let paranoiaTimer = null;
 let paranoid = false;
+
+let Night1Won = localStorage.getItem("Night1Won") === "false";
+let Night2Won = localStorage.getItem("Night2Won") === "false";
+let Night3Won = localStorage.getItem("Night3Won") === "false";
+let Night4Won = localStorage.getItem("Night4Won") === "false";
+let Night5Won = localStorage.getItem("Night5Won") === "false";
+
+let currentNight = parseInt(localStorage.getItem("currentNight")) || 1;
+let currentHour = 12;
+let nightTimer = null;
+
+
 
 // Enemy positions
 let Punch = "CAM1";
@@ -208,7 +224,67 @@ function startNewGame() {
   ambience.play();
   startAI();
   startInfectionMeter();
+  startNight();
 }
+    function advanceHour() {
+  if (currentHour < 6) {
+    currentHour++;
+    updateHourLabel();
+  }
+
+  if (currentHour === 6) {
+    endNight();
+  }
+}
+
+    function startNight() {
+  currentHour = 12;
+  updateHourLabel();
+  
+  nightTimer = setInterval(() => {
+    advanceHour();
+  }, 60000); 
+}
+    function endNight() {
+  clearInterval(nightTimer);
+  nightTimer = null;
+  resetAllGameStates();
+
+  if (currentNight === 1) {
+    Night1Won = true;
+    localStorage.setItem("Night1Won", "true");
+    currentNight = 2;
+  } else if (currentNight === 2) {
+    Night2Won = true;
+    localStorage.setItem("Night2Won", "true");
+    currentNight = 3;
+  } else if (currentNight === 3) {
+    Night3Won = true;
+    localStorage.setItem("Night3Won", "true");
+    currentNight = 4;
+  } else if (currentNight === 4) {
+    Night4Won = true;
+    localStorage.setItem("Night4Won", "true");
+    currentNight = 5;
+  } else if (currentNight === 5) {
+    Night5Won = true;
+    localStorage.setItem("Night5Won", "true");
+    showMenu();
+    return;
+  }
+
+  localStorage.setItem("currentNight", currentNight);
+
+  startNight();
+}
+
+
+function updateHourLabel() {
+  let label = currentHour === 12 ? "12AM" : currentHour + "AM";
+  document.getElementById("hourLabel").textContent = label;
+}
+
+
 
 // ====== CAMERA TOGGLE ======
 function toggleCamera() {
@@ -529,21 +605,93 @@ function disableDoor(which) {
   }
 }
 
+function showMenu() {
+  document.getElementById("game").style.display = "none";
+  document.getElementById("menu").style.display = "block";
 
+  const continueBtn = document.getElementById("continueBtn");
+
+  // Check if player has beaten at least one night
+  if (Night1Won || Night2Won || Night3Won || Night4Won || Night5Won) {
+    continueBtn.classList.remove("disabled");
+    continueBtn.textContent = "Continue (Night " + currentNight + ")";
+  } else {
+    continueBtn.classList.add("disabled");
+    continueBtn.textContent = "Continue";
+  }
+}
+
+document.getElementById("continueBtn").addEventListener("click", () => {
+  if (!document.getElementById("continueBtn").classList.contains("disabled")) {
+    document.getElementById("menu").style.display = "none";
+    document.getElementById("game").style.display = "block";
+    startNight();
+  }
+});
 
 function killPlayer(enemy) {
-  // Show jumpscare image
   const camView = document.getElementById("camView");
   camView.style.display = "block";
-  camView.src = enemy.toLowerCase() + "jumpscare.png"; // e.g. punchjumpscare.png
+  camView.src = enemy.toLowerCase() + "jumpscare.png";
 
-  // Play jumpscare audio
   let audio = new Audio("jumpscare.mp3");
   audio.play();
 
-  // End game (simple example: reload page)
-  setTimeout(()=>{ location.reload(); }, 3000);
+  setTimeout(() => {
+    showMenu();
+  }, 3000);
 }
+
+    function resetAllGameStates() {
+  // --- Clear enemy timers ---
+  if (punchDoorTimer) {
+    clearTimeout(punchDoorTimer);
+    punchDoorTimer = null;
+  }
+  if (snipeDoorTimer) {
+    clearTimeout(snipeDoorTimer);
+    snipeDoorTimer = null;
+  }
+  if (mouseDoorTimer) {
+    clearTimeout(mouseDoorTimer);
+    mouseDoorTimer = null;
+  }
+
+  // --- Reset enemy positions ---
+  Punch = "CAM1";
+  Snipe = "CAM1";
+  Mouse = "CAM1";
+
+  // --- Reset paranoia ---
+  if (paranoiaTimer) {
+    clearTimeout(paranoiaTimer);
+    paranoiaTimer = null;
+  }
+  paranoid = false;
+
+  // --- Reset doors ---
+  doorAClosed = false;
+  doorBClosed = false;
+  doorADisabled = false;
+  doorBDisabled = false;
+  doorATotalClosed = 0;
+  doorBTotalClosed = 0;
+  doorAClosedAt = null;
+  doorBClosedAt = null;
+  document.getElementById("doorA").src = "doorAoff.png";
+  document.getElementById("doorB").src = "doorBoff.png";
+
+  // --- Reset overlays ---
+  document.getElementById("staticOverlay").style.display = "none";
+  document.getElementById("darkOverlay").style.opacity = 0;
+
+  // --- Reset HUD ---
+  document.getElementById("camLabel").textContent = "CAM1";
+  document.getElementById("hourLabel").textContent = "12AM";
+
+  console.log("Game states reset for next night");
+}
+
   
 
   </script>
