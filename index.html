@@ -150,6 +150,8 @@
   position:absolute; top:10px; right:10px;
   font-size:28px; color:white; font-family:'Courier New', monospace;
   z-index:15;">12AM</div>
+    <img id="sixAmScreen" src="6am.png" 
+     style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; z-index:30;">
   </div>
 
   <div id="customNightMenu" style="display:none; margin-top:20px;">
@@ -363,33 +365,49 @@ document.getElementById("startCustomNight").addEventListener("click", () => {
     function endNight() {
   clearInterval(nightTimer);
   nightTimer = null;
-  resetAllGameStates();
 
-  if (currentNight === 1) {
-    Night1Won = true;
-    localStorage.setItem("Night1Won", "true");
-    currentNight = 2;
-  } else if (currentNight === 2) {
-    Night2Won = true;
-    localStorage.setItem("Night2Won", "true");
-    currentNight = 3;
-  } else if (currentNight === 3) {
-    Night3Won = true;
-    localStorage.setItem("Night3Won", "true");
-    currentNight = 4;
-  } else if (currentNight === 4) {
-    Night4Won = true;
-    localStorage.setItem("Night4Won", "true");
-    currentNight = 5;
-  } else if (currentNight === 5) {
-    Night5Won = true;
-    localStorage.setItem("Night5Won", "true");
-    showMenu();
-    return;
-  }
+  CamOn = false;
+  document.getElementById("office").style.display = "block";
+  document.getElementById("camView").style.display = "none";
+  document.getElementById("map").style.display = "none";
+  document.getElementById("staticOverlay").style.display = "none";
+  document.getElementById("doorA").style.display = "block";
+  document.getElementById("doorB").style.display = "block";
 
-  localStorage.setItem("currentNight", currentNight);
-  startNight();
+  const sixAmScreen = document.getElementById("sixAmScreen");
+  sixAmScreen.style.display = "block";
+
+
+  setTimeout(() => {
+    sixAmScreen.style.display = "none"; 
+    resetAllGameStates();
+
+    if (currentNight === 1) {
+      Night1Won = true;
+      localStorage.setItem("Night1Won", "true");
+      currentNight = 2;
+    } else if (currentNight === 2) {
+      Night2Won = true;
+      localStorage.setItem("Night2Won", "true");
+      currentNight = 3;
+    } else if (currentNight === 3) {
+      Night3Won = true;
+      localStorage.setItem("Night3Won", "true");
+      currentNight = 4;
+    } else if (currentNight === 4) {
+      Night4Won = true;
+      localStorage.setItem("Night4Won", "true");
+      currentNight = 5;
+    } else if (currentNight === 5) {
+      Night5Won = true;
+      localStorage.setItem("Night5Won", "true");
+      showMenu();
+      return;
+    }
+
+    localStorage.setItem("currentNight", currentNight);
+    startNight();
+  }, 3000); 
 }
 
 
