@@ -287,6 +287,7 @@ let mouseDoorTimer = null;
 function startNewGame() {
   document.getElementById("menu").style.display = "none";
   document.getElementById("game").style.display = "block";
+  Night6 = false;
   const ambience = document.getElementById("ambience");
   ambience.volume = 0.1;
   ambience.play();
