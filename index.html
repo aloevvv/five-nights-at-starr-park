@@ -866,9 +866,9 @@ setInterval(() => {
     setInterval(() => {
   let drain = 0;
 
-  if (doorAClosed) drain += 0.1;
+  if (doorAClosed) drain += 1.0;
 
-  if (doorBClosed) drain += 0.1;
+  if (doorBClosed) drain += 1.0;
 
   doorPower = Math.max(0, doorPower - drain);
 
