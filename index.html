@@ -315,17 +315,15 @@ function startNewGame() {
 function setAIForHour(night, hour) {
   if (Night6) {
     console.log(`Custom Night: Punch=${PunchAI}, Snipe=${SnipeAI}, Mouse=${MouseAI}, Boss=${BossAI}`);
-    return;
-  }
-
-  if (nightAI[night] && nightAI[night][hour]) {
+  } else if (nightAI[night] && nightAI[night][hour]) {
     PunchAI = nightAI[night][hour].Punch;
     SnipeAI = nightAI[night][hour].Snipe;
     MouseAI = nightAI[night][hour].Mouse;
     BossAI = nightAI[night][hour].Boss;
-    console.log(`Night ${night}, ${hour}AM: Punch=${PunchAI}, Snipe=${SnipeAI}, Mouse=${MouseAI}`);
+    console.log(`Night ${night}, ${hour}AM: Punch=${PunchAI}, Snipe=${SnipeAI}, Mouse=${MouseAI}, Boss=${BossAI}`);
   }
 }
+
 
     
     document.getElementById("customNightBtn").addEventListener("click", () => {
