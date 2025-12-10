@@ -344,7 +344,10 @@ document.getElementById("startCustomNight").addEventListener("click", () => {
   
   document.getElementById("customNightMenu").style.display = "none";
   document.getElementById("game").style.display = "block";
+  startAI();
+  startInfectionMeter();
   startNight();
+  bossTimer = setInterval(updateBoss, 5000);
 });
 
 
