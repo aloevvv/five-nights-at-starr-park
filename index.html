@@ -338,10 +338,12 @@ document.getElementById("startCustomNight").addEventListener("click", () => {
   SnipeAI = parseInt(document.getElementById("customSnipe").value);
   MouseAI = parseInt(document.getElementById("customMouse").value);
   BossAI = parseInt(document.getElementById("customBoss").value);
+
+  setAIForHour(currentNight, currentHour);
   
   Night6 = true;
 
-  // Reset game state and start
+  
   document.getElementById("customNightMenu").style.display = "none";
   document.getElementById("game").style.display = "block";
   resetAllGameStates();
