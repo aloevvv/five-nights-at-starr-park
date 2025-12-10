@@ -923,9 +923,18 @@ document.getElementById("continueBtn").addEventListener("click", () => {
   if (!document.getElementById("continueBtn").classList.contains("disabled")) {
     document.getElementById("menu").style.display = "none";
     document.getElementById("game").style.display = "block";
+
+    const ambience = document.getElementById("ambience");
+    ambience.volume = 0.1;
+    ambience.play();
+
+    startAI();
+    startInfectionMeter();
     startNight();
+    bossTimer = setInterval(updateBoss, 5000);
   }
 });
+
 
 function killPlayer(enemy) {
   const camView = document.getElementById("camView");
